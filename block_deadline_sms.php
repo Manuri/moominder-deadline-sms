@@ -30,8 +30,36 @@ class block_deadline_sms extends block_base{
     }
     
     public function cron(){
+        global $DB;
         
+        $now = time();
+        
+        $instances = $DB->get_records_sql('select * from mdl_assign');
+        
+        foreach ($instances as $record){
+            echo $assignment_id = $record->id;
+            echo $assignment_name = $record->name;
+            echo $due_date = $record->duedate;
+        }
     }
+    
+    //to connect with the database
+        function db_connect(){
+            $con = mysql_connect("localhost", "root","");
+
+            if(!$con){
+                die("no connection!!!!!!!!11");
+            }
+            else {
+                echo "connection established!!!!!!!1";
+            }
+            mysql_select_db("amaya_moodle",$con);
+            
+            return $con;
+        }
+        
+        
+        
     
     
 }
