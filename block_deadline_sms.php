@@ -41,6 +41,8 @@ class block_deadline_sms extends block_base{
             echo $assignment_name = $record->name;
             echo $due_date = $record->duedate;
         }
+        
+        
     }
     
     //to connect with the database
