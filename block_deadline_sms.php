@@ -59,7 +59,7 @@ class block_deadline_sms extends block_base {
         }
         if (isset($_POST['no'])) {  //if someone doesn't want subcribe for the SMS Forums Service
             $userid = $USER->id;
-            $this->dedlinesms_service_unsubscribe($userid);
+            $this->deadlinesms_service_unsubscribe($userid);
             $this->content->text .= get_string('disabled', 'block_deadline_sms');
         }
     }
