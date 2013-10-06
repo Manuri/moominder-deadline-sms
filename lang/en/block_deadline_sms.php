@@ -6,8 +6,8 @@
  */
 
 $string['pluginname']='Deadline SMS block';
-$string['deadline_sms'] = 'Quiz SMS';
-$string['deadline_sms:addinstance']='Add a new Quiz SMS block';
+$string['deadline_sms'] = 'Deadline SMS';
+$string['deadline_sms:addinstance']='Add a new Deadline SMS block';
 $string['deadline_sms:myaddinstance']='Add a new deadline SMS block to the My Moodle page';
 
 $string['wantservice']='Do you want the service?';

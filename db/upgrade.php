@@ -16,7 +16,7 @@ function xmldb_block_deadline_sms_upgrade($oldversion) {
  
 // Insert PHP code from XMLDB Editor here
     
-     if ($oldversion < 2013092502) {
+     if ($oldversion < 2013092503) {
 
         // Define field id to be added to deadlinesms_subscriptions
         $table = new xmldb_table('deadlinesms_subscriptions');
@@ -28,7 +28,7 @@ function xmldb_block_deadline_sms_upgrade($oldversion) {
         }
 
         // deadline_sms savepoint reached
-        upgrade_block_savepoint(true, 2013092502, 'deadline_sms');
+        upgrade_block_savepoint(true, 2013092503, 'deadline_sms');
     }
 
     
