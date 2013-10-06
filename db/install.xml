@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/deadline_sms/db" VERSION="20130925" COMMENT="XMLDB file for Moodle blocks/deadline_sms"
+<XMLDB PATH="blocks/deadline_sms/db" VERSION="20131006" COMMENT="XMLDB file for Moodle blocks/deadline_sms"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -14,9 +14,9 @@
     </TABLE>
     <TABLE NAME="deadlinesms_subscriptions" COMMENT="Default comment for the table, please edit me" PREVIOUS="block_deadline_sms">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="student_id"/>
-        <FIELD NAME="student_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="subscribed"/>
-        <FIELD NAME="subscribed" TYPE="binary" NOTNULL="false" SEQUENCE="false" PREVIOUS="student_id"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="telno"/>
+        <FIELD NAME="telno" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="userid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
