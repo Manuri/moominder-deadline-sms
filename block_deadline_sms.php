@@ -1,14 +1,18 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Block for Deadline SMS Plugin
+ * @package blocks
+ * @subpackage deadline_sms
+ * @author Amaya Perera 
  */
-
 class block_deadline_sms extends block_base {
 
+    /**
+     * Block initialization
+     */
     public function init() {
-        //$this->title = get_string('deadline_sms', 'block_deadline_sms');
+        $this->title = get_string('deadline_sms', 'block_deadline_sms');
         $this->specialization();
     }
 
@@ -33,11 +37,14 @@ class block_deadline_sms extends block_base {
     }
 
     public function specialization() {
+        $this->config = new stdClass;
+
         if (!empty($this->config->title)) {
             $this->title = $this->config->title;
         } else {
             //$this->config->title = 'Quiz SMS';
-            $this->title = 'Deadline SMS';
+            $this->config->title = 'Deadline SMS';
+            //$this->title = 'Deadline SMS';
         }
         if (empty($this->config->gateway)) {
             $this->config->gateway = '+94711114843';
@@ -56,7 +63,11 @@ class block_deadline_sms extends block_base {
         }
     }
 
-    //to get input from interface and subdcribe or unsubscribe
+    /**
+     * To get input from interface and subdcribe or unsubscribe
+     * @global type $DB
+     * @global type $USER
+     */
     function get_input_from_interace() {
 
         global $DB, $USER;
@@ -89,6 +100,13 @@ class block_deadline_sms extends block_base {
         }
     }
 
+    /**
+     * To subscribe for the deadline SMS service
+     * @global type $DB
+     * @param string $userid
+     * @param string $telno
+     * @return boolean
+     */
     function deadlinesms_service_subscribe($userid, $telno) {
 
         global $DB;
@@ -107,20 +125,33 @@ class block_deadline_sms extends block_base {
         }
     }
 
+    /**
+     * To unsubscribe from deadline SMS service
+     * @global type $DB
+     * @param string $userid
+     * @return boolean
+     */
     function deadlinesms_service_unsubscribe($userid) {
         global $DB;
         if ($DB->record_exists('deadlinesms_subscriptions', array("userid" => $userid))) {
             $DB->delete_records('deadlinesms_subscriptions', array("userid" => $userid));
             return true;
         }
-        return true;
+        return false;
     }
 
+    /**
+     * Runs periodically 
+     */
     public function cron() {
         $this->check_assignments_and_notify_subscribers();
     }
 
-    //to connect with the database
+    /**
+     * To connect to the database. This was used for testing purposes. 
+     * Moodle Data manipulation API is used in the code instead of this
+     * @return $con
+     */
     function db_connect() {
         $con = mysql_connect("localhost", "root", "");
 
@@ -134,6 +165,14 @@ class block_deadline_sms extends block_base {
         return $con;
     }
 
+    /**
+     * To check for the assignments to be notified about and send message
+     * @global type $DB
+     * @param string $difference
+     * @param string $cid
+     * @param string $assignmentname
+     * @param string $deadline
+     */
     function check_courses_and_subscribed_users($difference, $cid, $assignmentname, $deadline) {
         global $DB;
 
@@ -167,6 +206,11 @@ class block_deadline_sms extends block_base {
         }
     }
 
+    /**
+     * To calculate the time period between now and deadlines and call check_courses_and_subscribed_users() function
+     * @global type $DB
+     * @return boolean
+     */
     function check_assignments_and_notify_subscribers() {
         global $DB;
 
@@ -186,6 +230,14 @@ class block_deadline_sms extends block_base {
         return true;
     }
 
+    /**
+     * To call create_sms function and send_sms function
+     * @param string $courseid
+     * @param string $coursename
+     * @param string $assignmentname
+     * @param string $deadline
+     * @param string $to
+     */
     function send_deadline_sms($courseid, $coursename, $assignmentname, $deadline, $to) {
 
         $message = $this->create_sms($courseid, $coursename, $assignmentname, $deadline);
@@ -197,6 +249,10 @@ class block_deadline_sms extends block_base {
         $this->send_sms($to, $message, $from);
     }
 
+    /**
+     * 
+     * @param string $message
+     */
     function write_to_file($message) {
         $fp = fopen("/home/amaya/Desktop/myTextdeadline.txt", "a");
 
@@ -209,11 +265,25 @@ class block_deadline_sms extends block_base {
         }
     }
 
+    /**
+     * To create the SMS to be sent
+     * @param string $courseid
+     * @param string $coursename
+     * @param string $assignmentname
+     * @param string $deadline
+     * @return string
+     */
     function create_sms($courseid, $coursename, $assignmentname, $deadline) {
         $sms = 'Assignment:' . $assignmentname . ' of ' . $courseid . ' ' . $coursename . ' will due at ' . $deadline;
         return $sms;
     }
 
+    /**
+     * To send SMS using Kannel SMS gateway
+     * @param string $in_number
+     * @param string $in_msg
+     * @param string $from
+     */
     function send_sms($in_number, $in_msg, $from) {
 
         /* $url = "/cgi-bin/sendsms?username=kannelUser&password=123&from={$from}&to={$in_number}&text={$in_msg}";
