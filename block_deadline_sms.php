@@ -8,7 +8,8 @@
 class block_deadline_sms extends block_base {
 
     public function init() {
-        $this->title = get_string('deadline_sms', 'block_deadline_sms');
+        //$this->title = get_string('deadline_sms', 'block_deadline_sms');
+        $this->specialization();
     }
 
     public function get_content() {
@@ -29,6 +30,30 @@ class block_deadline_sms extends block_base {
         $this->get_input_from_interace();
 
         return $this->content;
+    }
+
+    public function specialization() {
+        if (!empty($this->config->title)) {
+            $this->title = $this->config->title;
+        } else {
+            //$this->config->title = 'Quiz SMS';
+            $this->title = 'Deadline SMS';
+        }
+        if (empty($this->config->gateway)) {
+            $this->config->gateway = '+94711114843';
+        }
+
+        if (empty($this->config->pwd)) {
+            $this->config->pwd = '123';
+        }
+
+        if (empty($this->config->username)) {
+            $this->config->username = 'kannelUser';
+        }
+
+        if (empty($this->config->baseurl)) {
+            $this->config->baseurl = 'http://localhost:13013';
+        }
     }
 
     //to get input from interface and subdcribe or unsubscribe
@@ -112,28 +137,27 @@ class block_deadline_sms extends block_base {
     function check_courses_and_subscribed_users($difference, $cid, $assignmentname, $deadline) {
         global $DB;
 
-        $this->db_connect();
-
         $context = $context = context_course::instance($cid);
         $enrolled_users = get_enrolled_users($context);
-        $subscribed_users = $DB->get_records_sql('select * from mdl_deadlinesms_subscriptions');
 
-        //if ($difference >= 0 && $difference <= 1) {
-        if ($difference >= 0) {
-            //$this->write_to_file('difference>=0');
-            $result = mysql_query("select shortname from mdl_course where id = $cid");
+        $subscribed_users = $DB->get_records('deadlinesms_subscriptions');
+
+        if ($difference >= 3540 && $difference <= 3600) {
+
+            $this->write_to_file('difference>=3600');
+
+            $result = $DB->get_records_select('course', "id = $cid");
 
             if (!$result) { // add this check.
                 die('Invalid query: ' . mysql_error());
             }
 
             $rows = mysql_fetch_array($result);
-            // $this->write_to_file($rows['shortname']);
 
             foreach ($enrolled_users as $enuser) {
                 foreach ($subscribed_users as $subuser) {
                     if ($enuser->id == $subuser->userid) {
-                        // $this->write_to_file('a subscribed user= '.$subuser->userid);
+
                         $this->send_deadline_sms($cid, $rows['shortname'], $assignmentname, date("Y-m-d H:i:s", $deadline), $subuser->telno);
                     }
                 }
@@ -156,8 +180,7 @@ class block_deadline_sms extends block_base {
             echo $cid = $record->id;
             echo $assignmentame = $record->name;
             echo $deadline = $record->duedate;
-            echo $difference = $record->difference = $now - $deadline;
-            // $this->write_to_file('difference= '.$difference);
+            echo $difference = $record->difference = $deadline - $now;
             $this->check_courses_and_subscribed_users($difference, $cid, $assignmentame, $deadline);
         }
         return true;
@@ -169,8 +192,9 @@ class block_deadline_sms extends block_base {
 
 
         $this->write_to_file($to);
-        //$this->send_sms('+94718010490',$message,'+94711114843');
-        //$this->send_sms($to, $message,'+94711114843');
+        // $this->send_sms($to, $message,'+94711114843');
+        $from = $this->config->gateway;
+        $this->send_sms($to, $message, $from);
     }
 
     function write_to_file($message) {
@@ -192,10 +216,19 @@ class block_deadline_sms extends block_base {
 
     function send_sms($in_number, $in_msg, $from) {
 
-        $url = "/cgi-bin/sendsms?username=kannelUser&password=123&from={$from}&to={$in_number}&text={$in_msg}";
+        /* $url = "/cgi-bin/sendsms?username=kannelUser&password=123&from={$from}&to={$in_number}&text={$in_msg}";
+          $url = str_replace(" ", "%20", $url);
+
+          $results = file('http://localhost:13013' . $url); */
+        $password = $this->config->pwd;
+        $username = $this->config->username;
+        $baseurl = $this->config->baseurl;
+
+        $url = "/cgi-bin/sendsms?username={$username}&password={$password}&from={$from}&to={$in_number}&text={$in_msg}";
         $url = str_replace(" ", "%20", $url);
 
-        $results = file('http://localhost:13013' . $url);
+        // $results = file('http://localhost:13013' . $url);
+        $results = file($baseurl . $url);
     }
 
 }
