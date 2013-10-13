@@ -25,7 +25,7 @@ class block_deadline_sms extends block_base {
         $this->content->text .= '<td width="60"><input type="submit" name="no" id="button" value="' . get_string('no', 'block_deadline_sms') . '" a align="right"/></td>';
         $this->content->text .= '</tr> </table>';
         $this->content->text .= '</form>';
-        
+
         $this->get_input_from_interace();
 
         return $this->content;
@@ -90,7 +90,6 @@ class block_deadline_sms extends block_base {
         }
         return true;
     }
-    
 
     public function cron() {
         $this->check_assignments_and_notify_subscribers();
